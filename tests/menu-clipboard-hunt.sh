@@ -98,18 +98,21 @@ for action in copy cut copyas-list copyas-grid copyas-columns terminal pasteas p
     if [[ "$action" == copyas-* ]]; then
         checks=$((checks + 1))
         # Sample input: {"text":"/source/alpha.txt\n/source/beta.txt"} is one Copy as publication.
+        # Relative path of a file in the listed directory is its name, so that leaf
+        # and Name both publish alpha.txt\nbeta.txt; Path and Ctrl+Shift+C stay absolute.
         python3 - "$test_root/clipboard.calls" "$test_root/source" <<'PY'
 import json, pathlib, sys
 calls = [json.loads(line)["text"] for line in pathlib.Path(sys.argv[1]).read_text().splitlines()]
 root = sys.argv[2]
 paths = [root + "/alpha.txt", root + "/beta.txt"]
-expected = ["\n".join(paths), "alpha.txt\nbeta.txt", "alpha\nbeta", root + "\n" + root,
+names = "alpha.txt\nbeta.txt"
+expected = ["\n".join(paths), names, names, "alpha\nbeta", root + "\n" + root,
             "\n".join(pathlib.Path(p).as_uri() for p in paths),
             "\n".join("'" + p + "'" for p in paths), "\n".join(paths)]
 if calls != expected:
     print("FAIL Copy as leaves or Ctrl+Shift+C did not copy the whole selection:", repr(calls))
     sys.exit(1)
-print("PASS six Copy as leaves and Ctrl+Shift+C copied both selected files")
+print("PASS seven Copy as leaves and Ctrl+Shift+C copied both selected files")
 PY
         if [ "$?" -ne 0 ]; then failed=1; failures=$((failures + 1)); fi
     elif [[ "$action" == terminal ]]; then

@@ -74,6 +74,12 @@ class ClipboardFilesTest(unittest.TestCase):
         hunt = HELPER_PATH.with_name("menu-clipboard-hunt.sh").read_text()
         self.assertIn('tests/menu-clipboard-checks.py terminals "$action"', hunt)
 
+    def test_hunt_expects_relative_path_between_path_and_name(self):
+        hunt = HELPER_PATH.with_name("menu-clipboard-hunt.sh").read_text()
+        self.assertIn('copyRelative', HELPER_PATH.with_name("menu-clipboard-hunt.qml").read_text())
+        self.assertIn('names, names, "alpha\\nbeta"', hunt)
+        self.assertIn("seven Copy as leaves", hunt)
+
     def test_publication_accepts_no_wl_copy_calls_or_text_only_calls(self):
         calls = Path(self.scratch.name) / "clipboard.calls"
         for action in ("copy", "cut"):
