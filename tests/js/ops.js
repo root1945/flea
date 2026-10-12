@@ -210,6 +210,10 @@ function run(check) {
     check("Copy as with paths copies at once in the asked format",
           copyPane.opener.copied.join(";") + "|" + copySent.length + "|" + String(copyPane.pathsPending),
           "/d/a\n/d/b|0|null")
+    var relPane = pathsPane([])
+    Ops.copyAs(relPane, "relative", ["/d/a", "/d/sub/b"])
+    check("Copy as relative names each file from the listed directory",
+          relPane.opener.copied.join(";"), "a\nsub/b")
     var askSent = []
     var askPane = pathsPane(askSent)
     Ops.copyAs(askPane, "quoted")
@@ -237,6 +241,11 @@ function run(check) {
     check("a copyAs reply copies the resolved list in the claimed format",
           answeredPane.opener.copied.join(";") + "|" + String(answeredPane.pathsPending),
           "'/d/a b'|null")
+    var relAnswer = pathsPane([])
+    relAnswer.pathsPending = { kind: "copyAs", format: "relative", base: "/d" }
+    Ops.pathsResolved(relAnswer, ["/d/a", "/d/sub/b"])
+    check("a relative copyAs reply is from the stored listing",
+          relAnswer.opener.copied.join(";"), "a\nsub/b")
     var allowedPane = pathsPane([])
     allowedPane.pathsPending = { kind: "permissions" }
     Ops.pathsResolved(allowedPane, ["/d/x"])

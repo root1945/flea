@@ -63,7 +63,7 @@ Loader {
     // MenuAdditions040: every Copy as variant covers the whole selection, one
     // path per line, through wl-copy. The menu's snapshot carries paths a
     // window cannot hold, so the leaves read them rather than the cursor row.
-    property var copyKinds: ({ copyPath: "path", copyName: "name", copyStem: "stem",
+    property var copyKinds: ({ copyPath: "path", copyRelative: "relative", copyName: "name", copyStem: "stem",
         copydirpath: "dirpath", copyUri: "uri", copyQuoted: "quoted" })
     function copyVariant(action, paths) {
         var leaf = action.indexOf("copyAs:") === 0 ? action.substring("copyAs:".length) : action
@@ -71,7 +71,7 @@ Loader {
         if (kind === undefined) return false
         var taken = root.targets(paths)
         if (taken.length === 0) return true
-        root.pane.opener.copyText(CopyAs.lines(taken, kind))
+        root.pane.opener.copyText(CopyAs.lines(taken, kind, root.pane.path))
         return true
     }
 

@@ -27,7 +27,7 @@ ShellRoot {
     property int leafIndex: 0
     readonly property int artifactStage: 20
     readonly property var linkLeaves: ({pasteas: "pasteLink", "pasteas-absolute": "pasteAbsoluteLink", "pasteas-hard": "pasteHardLink"})
-    readonly property var copyLeaves: ["copyPath", "copyName", "copyStem", "copydirpath", "copyUri", "copyQuoted"]
+    readonly property var copyLeaves: ["copyPath", "copyRelative", "copyName", "copyStem", "copydirpath", "copyUri", "copyQuoted"]
     readonly property var pane: body.currentPane
 
     function log(line) { console.log("CLIPHUNT " + line) }
