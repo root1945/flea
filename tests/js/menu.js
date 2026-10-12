@@ -512,4 +512,7 @@ function providerRefresh(check) {
     var pmaText = Source.source("ui/PaneMenuActions.qml")
     check("Show original sends through requestLinkTarget", pmaText.indexOf("requestLinkTarget") >= 0, true)
     check("and sends no raw linktarget", pmaText.indexOf('"linktarget"') < 0, true)
+    // Source pin: a menu leaf copies through Ops.copyAs, so Recent's refusal covers it too.
+    check("Copy as leaves copy through Ops.copyAs", pmaText.indexOf("Ops.copyAs(root.pane, kind, taken)") >= 0, true)
+    check("and never format their own text", pmaText.indexOf("CopyAs.lines") < 0, true)
 }

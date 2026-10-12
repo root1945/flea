@@ -214,6 +214,20 @@ function run(check) {
     Ops.copyAs(relPane, "relative", ["/d/a", "/d/sub/b"])
     check("Copy as relative names each file from the listed directory",
           relPane.opener.copied.join(";"), "a\nsub/b")
+    // Recent stands on "/", so a relative path there would read as relative to the terminal.
+    var recentSent = []
+    var recentPane = pathsPane(recentSent)
+    recentPane.path = "/"
+    recentPane.recentMode = "recent"
+    Ops.copyAs(recentPane, "relative", ["/home/gm/a.txt"])
+    Ops.copyAs(recentPane, "relative")
+    check("Recent refuses Relative path with or without paths, copying and asking nothing",
+          recentPane.opener.copied.length + "|" + recentSent.length + "|" + String(recentPane.pathsPending),
+          "0|0|null")
+    check("and says why, twice, as information",
+          JSON.stringify(recentPane.said), JSON.stringify([[Ops.RECENT_RELATIVE, false], [Ops.RECENT_RELATIVE, false]]))
+    Ops.copyAs(recentPane, "path", ["/home/gm/a.txt"])
+    check("Recent still copies the full Path", recentPane.opener.copied.join(";"), "/home/gm/a.txt")
     var askSent = []
     var askPane = pathsPane(askSent)
     Ops.copyAs(askPane, "quoted")

@@ -1021,7 +1021,7 @@ FocusScope {
         // it names, each leaf copying that path in its own form.
         if (action.indexOf("copyAs:") === 0) {
             var leaf = action.substring("copyAs:".length)
-            var kinds = { copyPath: "path", copyRelative: "relative", copyName: "name", copyStem: "stem",
+            var kinds = { copyPath: "path", copyName: "name", copyStem: "stem",
                 copydirpath: "dirpath", copyUri: "uri", copyQuoted: "quoted" }
             if (kinds[leaf] !== undefined) { Ops.copyAs(root, kinds[leaf], [path]); return }
         }

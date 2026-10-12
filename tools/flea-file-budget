@@ -65,12 +65,12 @@ tests/js/mdstructure.js 626
 tests/js/keymap.js 310
 tests/js/focus.js 749
 tests/js/mounts.js 262
-tests/js/menu.js 515
+tests/js/menu.js 518
 tests/js/nav.js 362
 tests/picker-grid.qml 450
 tests/picker-hunt.qml 445
 tests/js/network.js 306
-tests/js/ops.js 520
+tests/js/ops.js 534
 tests/js/slowclick.js 308
 tests/js/settings.js 352
 tests/js/tap.js 333
@@ -113,7 +113,7 @@ ui/NetworkForm.qml 406
 ui/NetworkMounts.qml 849
 ui/OpenWithDialog.qml 608
 ui/Pane.qml 1043
-ui/PaneMenuActions.qml 467
+ui/PaneMenuActions.qml 466
 ui/PaneWire.qml 586
 ui/PermissionsDialog.qml 674
 ui/PickerWindow.qml 779
@@ -143,7 +143,7 @@ ui/js/MdLeaf.js 316
 ui/js/MdInline.js 295
 ui/js/Menu.js 455
 ui/js/Drag.js 342
-ui/js/Ops.js 427
+ui/js/Ops.js 430
 ui/js/Picker.js 328
 ui/js/Settings.js 456
 ui/js/Tabs.js 719

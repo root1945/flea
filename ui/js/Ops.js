@@ -283,8 +283,11 @@ function clipFailed(pane) {
 // a different directory from the listing. Relative path is from pane.path,
 // stored on the claim so a later listing cannot change it. With paths the
 // text goes out at once; without, the backend resolves the indices while it
-// still can, the same rule clip follows.
+// still can, the same rule clip follows. Recent stands on "/", so a relative
+// path there would read as relative to the terminal and is refused.
+var RECENT_RELATIVE = "This listing is a history, and has no folder to copy a relative path from."
 function copyAs(pane, kind, paths) {
+    if (kind === "relative" && pane.recentMode && pane.recentMode.length > 0) { pane.message(RECENT_RELATIVE, false); return }
     if (paths && paths.length > 0) {
         pane.opener.copyText(CopyAs.lines(paths, kind, pane.path))
         return

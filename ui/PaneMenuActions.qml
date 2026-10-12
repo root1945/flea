@@ -3,7 +3,6 @@ import Quickshell
 import Quickshell.Io
 import "." as Flea
 import "js/LocalSend.js" as LocalSendJs
-import "js/CopyAs.js" as CopyAs
 import "js/Menu.js" as Menu
 import "js/Ops.js" as Ops
 
@@ -71,7 +70,7 @@ Loader {
         if (kind === undefined) return false
         var taken = root.targets(paths)
         if (taken.length === 0) return true
-        root.pane.opener.copyText(CopyAs.lines(taken, kind, root.pane.path))
+        Ops.copyAs(root.pane, kind, taken)
         return true
     }
 
