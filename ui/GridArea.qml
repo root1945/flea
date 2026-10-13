@@ -96,8 +96,21 @@ GridView {
         root.renameExtraHeight = height
     }
     readonly property int visibleTileRows: Math.max(1, Math.ceil(root.height / root.cellHeightPx))
-    onColumnsChanged: if (root.visible) settle.restart()
-    onVisibleTileRowsChanged: if (root.visible) settle.restart()
+    onColumnsChanged: root.afterReflow()
+    onVisibleTileRowsChanged: root.afterReflow()
+    onCellWidthChanged: root.afterReflow()
+    // A remap parents pooled tiles without onReused, so they stay blank and ignore clicks; prebuild parks stay unparented.
+    function afterReflow() {
+        if (!root.visible) return
+        root.forceLayout()
+        var kids = root.contentItem.children
+        for (var i = 0; i < kids.length; i++) {
+            var t = kids[i]
+            if (t.pooled === true && t.prebuilt !== true && t.parent === root.contentItem) t.pooled = false
+        }
+        root.requestIfDrifted()
+        if (settle) settle.restart()
+    }
 
     focus: true
     // Whichever view is up owns the keyboard, and Focus.handleKey is the one route all three take.
