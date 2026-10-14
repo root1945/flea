@@ -490,10 +490,12 @@ GridView {
     // Where the landing ask's window starts, so its own reply is told from another ask's.
     property int landingStart: -1
     // The wait ends on the ask's outcome, rows covering the cursor or not, or its refusal; a wheel, drag, flick or bar press ends it for an ask never answered.
+    // A reflow during the wait skipped its drift ask, and a reveal that stays put asks none, so a landing that revealed asks it; a reply inside the ask lands before currentIndex follows.
     function landIfReady() {
         if (!root.landingWait || (root.windowOwed() && root.pane.held !== root.landingStart)) return
         root.landingWait = false
         root.revealCursor()
+        if (root.currentIndex === root.cursorView) root.requestIfDrifted()
     }
     // A refused or unanswered window leaves the view where it is and frees the drift asks; the operator owns the view from here.
     function endLanding(reveal) {

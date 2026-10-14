@@ -9341,6 +9341,8 @@ The Grid hover fix reads the shared probe's scene point, because a Flickable put
 
 The Grid resize refill (#294) moves one ceiling, re-derived with `wc -l`: `ui/GridArea.qml` 663 to 676 for `afterReflow`, which unpools parented pooled tiles after a column, cell-width or visible-row remap and asks the drifted window. `tests/gridresize.qml` is 362, over the soft budget and under the hard cap.
 
+The landing after a Grid reflow moves two ceilings, re-derived with `wc -l`: `ui/GridArea.qml` 676 to 678 for `landIfReady` asking the drifted window once a far landing ends, because a reflow during the wait skipped its own drift ask and a reveal that leaves the view in place asks none, and `tests/gridresize.qml` enters `known_over_cap` at 424, over the 400 cap, for the widening-while-landing case, which shares the suite's grid and pane stub.
+
 The VIS4 fixes move one ceiling, re-derived with `wc -l`: `tests/dialog-board.qml` 654 to 663 for the Open With cursor-row focus leg, and `tests/dialog-board.sh` expects 134 checks; the Properties Tags pair now sits after Size (after Contains for a folder, and after the extra pairs for a card that has them) drawn as a swatch and name per own tag, and `tests/flash-ending-focus.sh` expects 5 passes for the Size cell ending one `rowPaddingX` inside its row.
 
 The Properties Tags pair fix moves one ceiling, re-derived with `wc -l`: `ui/Theme.qml` 465 to 468 on its own branch, which is 472 to 475 on the joined stage5 tree (the strays and rail-frame join paragraph below), for `tagNameGap` and `tagPairGap`, the board's 6 px and 16 px at text size 14, with the one comment line that names them.

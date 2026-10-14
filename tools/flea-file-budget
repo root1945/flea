@@ -128,7 +128,7 @@ ui/ColumnsArea.qml 547
 ui/ColumnPane.qml 450
 ui/ContextMenu.qml 781
 ui/ConvertDialog.qml 456
-ui/GridArea.qml 676
+ui/GridArea.qml 678
 ui/Ipc.qml 987
 tests/gridprebuild.qml 457
 tests/columnsprebuild.qml 416
@@ -195,6 +195,7 @@ tests/unlock-stdin.qml 483
 src/backend/searchindex.rs 401
 tests/gridjump.qml 516
 tests/gridbare.qml 426
+tests/gridresize.qml 424
 src/backend/trash.rs 401
 src/backend/trash_tests.rs 423
 tests/permissions-adv.qml 402"

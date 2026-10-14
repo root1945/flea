@@ -4,8 +4,9 @@ import QtQuick
 import Quickshell
 import "flea" as Flea
 
-// gridresize: after a Grid shrink, tiles that were off-screen at the resize draw names and take a click.
-// tests/gridresize.sh drives it. Sample output: "GRIDRESIZE PASS checks=12"
+// gridresize: after a Grid shrink, tiles that were off-screen at the resize draw names and take a click,
+// and a far landing that waits across a widening asks the window the wider view shows.
+// tests/gridresize.sh drives it. Sample output: "GRIDRESIZE PASS checks=267"
 ShellRoot {
     id: root
 
@@ -17,15 +18,19 @@ ShellRoot {
     property int wideLast: 0
     property int polls: 0
     property int stage: 0
+    property int wideCols: 0
+    property int wideRows: 0
+    property var landAsk: null
+    property real landY: 0
 
     function pad(i) {
         var n = String(i)
         while (n.length < 3) n = "0" + n
         return n
     }
-    function buildRows() {
-        var rows = []
-        for (var i = 0; i < root.rowCount; i++)
+    function buildRows(start, count) {
+        var rows = [], from = start || 0, end = count === undefined ? root.rowCount : from + count
+        for (var i = from; i < end; i++)
             rows.push({ n: "item" + root.pad(i) + ".txt", d: false, i: "text-x-generic",
                 p: 420, s: 13, m: 1758835200, t: false, k: 0, v: 0 })
         return rows
@@ -36,12 +41,13 @@ ShellRoot {
         QtObject {
             property int heldListing: 1
             property int windowCalls: 0
+            property var asks: []
             function peek(path, size, hidden) {}
             function thumb(rows, cacheOnly) {}
             function thumbcancel(rows) {}
             function dirsize(rows) {}
             function dirsizecancel() {}
-            function window(start, count) { windowCalls += 1 }
+            function window(start, count) { windowCalls += 1; asks.push({ start: start, count: count }) }
         }
     }
 
@@ -347,7 +353,63 @@ ShellRoot {
         var cy = t.y + Math.min(24, t.height / 4)
         root.check("height tile click", grid.tileAt(cx, cy) === root.pastIndex, "tileAt=" + grid.tileAt(cx, cy))
         root.inspectViewport("height")
-        root.report()
+        root.landingReflow()
+    }
+
+    // Measure the wide geometry, then narrow the grid and hold only its first screen.
+    function landingReflow() {
+        root.stage = 8
+        grid.contentY = grid.originY
+        grid.width = 2400
+        grid.height = 900
+        step.next = function () {
+            root.wideCols = grid.columns
+            root.wideRows = grid.visibleTileRows
+            grid.width = 400
+            grid.height = 260
+            step.next = root.landFar
+            step.start()
+        }
+        step.start()
+    }
+
+    // A cursor past the narrow screen but on the wide one's last whole row starts a far landing.
+    function landFar() {
+        root.stage = 9
+        var cols = grid.columns, rows = grid.visibleTileRows, cursor = root.wideCols * Math.max(0, root.wideRows - 2)
+        root.stubPane.refetchMargin = 2
+        root.stubPane.held = 0
+        root.stubPane.rows = root.buildRows(0, cols * (rows + 1))
+        root.stubBackend.asks = []
+        root.stubPane.cursorIndex = cursor
+        root.landAsk = root.stubBackend.asks.length > 0 ? root.stubBackend.asks[root.stubBackend.asks.length - 1] : null
+        root.check("landing waits", grid.landingWait === true && root.landAsk !== null, "wait=" + grid.landingWait + " cursor=" + cursor)
+        if (root.landAsk === null || root.landAsk.start <= 0) { root.fail("fixture landing window starts at row 0"); root.report(); return }
+        grid.width = 2400
+        grid.height = 900
+        step.next = root.landReply
+        step.start()
+    }
+
+    // The reply lands with the cursor already on screen, so the view stays and the drift ask is all that fills the rows above.
+    function landReply() {
+        root.stage = 10
+        root.check("widened while waiting", grid.columns === root.wideCols && grid.landingWait === true, "cols=" + grid.columns)
+        root.landY = grid.contentY
+        root.stubBackend.asks = []
+        root.stubPane.held = root.landAsk.start
+        root.stubPane.rows = root.buildRows(root.landAsk.start, Math.min(root.landAsk.count, root.rowCount - root.landAsk.start))
+        step.next = function () {
+            var range = grid.visibleRange(), asks = root.stubBackend.asks, covered = false
+            for (var i = 0; i < asks.length; i++)
+                if (asks[i].start <= range.first && asks[i].start + asks[i].count > range.last) covered = true
+            root.check("landing ended", grid.landingWait === false)
+            root.check("view stayed", grid.contentY === root.landY, "y=" + grid.contentY + " was " + root.landY)
+            root.check("unheld rows on screen", range.first < root.stubPane.held, "first=" + range.first + " held=" + root.stubPane.held)
+            root.check("landing asks the reflowed window", covered, "range=" + range.first + ".." + range.last + " asks=" + JSON.stringify(asks))
+            root.report()
+        }
+        step.start()
     }
 
     function report() {
